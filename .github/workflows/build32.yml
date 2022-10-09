@@ -1,0 +1,36 @@
+name: build32
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    # Skip building pull requests from the same repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != '${{ github.repository }}'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Install Static Qt
+      run: |
+        Invoke-WebRequest https://github.com/gmh5225/static-build-qt5/releases/download/qt5_5152_static/qt5_5152_static_32.zip -OutFile .\qt5_5152_static_32.zip
+        expand-archive -path "qt5_5152_static_32.zip"
+
+    - name: Enable Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1.7.0
+
+    - name: Build
+      run: |
+        cmake -AWin32 -DCMAKE_CONFIGURATION_TYPES="Release" "-DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install" -DCMAKE_PREFIX_PATH=qt5_5152_static_32 -B build32
+        cmake --build build32 --config Release
+        cmake --install build32
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: bin32-${{ matrix.os }}
+        path: install
