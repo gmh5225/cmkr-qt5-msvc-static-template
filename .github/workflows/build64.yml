@@ -1,0 +1,41 @@
+name: build64
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    # Skip building pull requests from the same repository
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != '${{ github.repository }}'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019]
+    env:
+      BUILD_TYPE: Release
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install ninja-build tool
+      uses: seanmiddleditch/gha-setup-ninja@v3
+
+    - name: Install Static Qt
+      run: |
+        Invoke-WebRequest https://github.com/gmh5225/static-build-qt5/releases/download/qt5_5152_static/qt5_5152_static_64.zip -OutFile .\qt5_5152_static_64.zip
+        expand-archive -path "qt5_5152_static_64.zip"
+
+    - name: Enable Developer Command Prompt
+      uses: ilammy/msvc-dev-cmd@v1.7.0
+
+    - name: Build
+      run: |
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} "-DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/install" -DCMAKE_PREFIX_PATH=qt5_5152_static_64 -B build64
+        cmake --build build64
+        cmake --install build64
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: bin64-${{ matrix.os }}
+        path: install
