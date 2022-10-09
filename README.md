@@ -10,7 +10,13 @@ https://github.com/build-cpp/cmkr
 ## Building
 
 ```
-cmake -Bbuild -DCMAKE_PREFIX_PATH=c:\Qt\5.15.2\msvc2019_64static -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CONFIGURATION_TYPES="Release"
-cmake --build build --config Release
-cmake --install build
+X86
+cmake -Bbuild32 -DCMAKE_PREFIX_PATH=c:\Qt\5.15.2\msvc2019static -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CONFIGURATION_TYPES="Release" -AWin32
+cmake --build build32 --config Release
+cmake --install build32
+
+X64
+cmake -Bbuild64 -DCMAKE_PREFIX_PATH=c:\Qt\5.15.2\msvc2019_64static -DCMAKE_INSTALL_PREFIX=install -DCMAKE_CONFIGURATION_TYPES="Release"
+cmake --build build64 --config Release
+cmake --install build64
 ```
