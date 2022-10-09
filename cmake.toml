@@ -1,0 +1,32 @@
+[cmake]
+version = "3.15"
+cmkr-include = "cmake/cmkr.cmake"
+
+[project]
+name = "cmkr-qt5-msvc-static-template"
+version = "0.1.0"
+include-after = ["cmake/Qt5Helpers.cmake"]
+msvc-runtime = "static"
+
+[find-package]
+Qt5 = { components = ["Widgets"] }
+
+[target.cmkr-qt5-msvc-static-template]
+type = "executable"
+sources = [
+    "src/main.cpp",
+    "src/MainWindow.cpp",
+    "src/MainWindow.h",
+    "src/MainWindow.ui",
+    "src/resource.qrc",
+]
+link-libraries = ["Qt5::Widgets"]
+msvc.link-options = ["/SUBSYSTEM:WINDOWS"]
+cmake-after = """
+# Enable Qt moc/rrc/uic support
+target_qt(${CMKR_TARGET})
+"""
+
+[[install]]
+targets = ["cmkr-qt5-msvc-static-template"]
+destination = "bin"
