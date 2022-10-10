@@ -24,8 +24,8 @@ main(int argc, char *argv[])
 
     // Create application
     QApplication app(argc, argv);
-    QApplication::setOrganizationName("UnknownKit");
-    QApplication::setApplicationName("UnknownKit");
+    QApplication::setOrganizationName("msvc-static-template");
+    QApplication::setApplicationName("msvc-static-template");
 
     // Create main window
     MainWindow w;
