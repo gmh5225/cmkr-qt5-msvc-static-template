@@ -1,12 +1,9 @@
 # cmkr-qt5-msvc-static-template
 
-https://github.com/gmh5225/static-build-qt5/releases/download/qt5_5152_static/qt5_5152_static_32.zip
-
-https://github.com/gmh5225/static-build-qt5/releases/download/qt5_5152_static/qt5_5152_static_64.zip
-
-https://github.com/build-cpp/cmkr
-
-https://github.com/build-cpp/Qt5CMakeTemplate
+- https://github.com/gmh5225/static-build-qt5/releases/download/qt5_5152_static/qt5_5152_static_32.zip
+- https://github.com/gmh5225/static-build-qt5/releases/download/qt5_5152_static/qt5_5152_static_64.zip
+- https://github.com/build-cpp/cmkr
+- https://github.com/build-cpp/Qt5CMakeTemplate
 
 
 ## Building
