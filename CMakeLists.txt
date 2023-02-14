@@ -5,18 +5,17 @@ cmake_minimum_required(VERSION 3.15)
 
 # Enable support for MSVC_RUNTIME_LIBRARY
 cmake_policy(SET CMP0091 NEW)
-
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	message(FATAL_ERROR "In-tree builds are not supported. Run CMake from a separate directory: cmake -B build")
 endif()
 
-# Regenerate CMakeLists.txt automatically in the root project
 set(CMKR_ROOT_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	set(CMKR_ROOT_PROJECT ON)
 
-	# Bootstrap cmkr
+	# Bootstrap cmkr and automatically regenerate CMakeLists.txt
 	include("cmake/cmkr.cmake" OPTIONAL RESULT_VARIABLE CMKR_INCLUDE_RESULT)
 	if(CMKR_INCLUDE_RESULT)
 		cmkr()
@@ -24,10 +23,8 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 	# Enable folder support
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-endif()
 
-# Create a configure-time dependency on cmake.toml to improve IDE support
-if(CMKR_ROOT_PROJECT)
+	# Create a configure-time dependency on cmake.toml to improve IDE support
 	configure_file(cmake.toml cmake.toml COPYONLY)
 endif()
 
@@ -44,34 +41,19 @@ find_package(Qt5 REQUIRED
 		Widgets
 )
 
-# Target cmkr-qt5-msvc-static-template
-set(CMKR_TARGET cmkr-qt5-msvc-static-template)
-set(cmkr-qt5-msvc-static-template_SOURCES "")
-
-list(APPEND cmkr-qt5-msvc-static-template_SOURCES
+# Target: cmkr-qt5-msvc-static-template
+set(cmkr-qt5-msvc-static-template_SOURCES
 	"src/main.cpp"
 	"src/MainWindow.cpp"
 	"src/MainWindow.h"
 	"src/MainWindow.ui"
 	"src/resource.qrc"
-)
-
-list(APPEND cmkr-qt5-msvc-static-template_SOURCES
 	cmake.toml
 )
 
-set(CMKR_SOURCES ${cmkr-qt5-msvc-static-template_SOURCES})
 add_executable(cmkr-qt5-msvc-static-template)
 
-if(cmkr-qt5-msvc-static-template_SOURCES)
-	target_sources(cmkr-qt5-msvc-static-template PRIVATE ${cmkr-qt5-msvc-static-template_SOURCES})
-endif()
-
-get_directory_property(CMKR_VS_STARTUP_PROJECT DIRECTORY ${PROJECT_SOURCE_DIR} DEFINITION VS_STARTUP_PROJECT)
-if(NOT CMKR_VS_STARTUP_PROJECT)
-	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT cmkr-qt5-msvc-static-template)
-endif()
-
+target_sources(cmkr-qt5-msvc-static-template PRIVATE ${cmkr-qt5-msvc-static-template_SOURCES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${cmkr-qt5-msvc-static-template_SOURCES})
 
 target_link_libraries(cmkr-qt5-msvc-static-template PRIVATE
@@ -84,11 +66,14 @@ if(MSVC) # msvc
 	)
 endif()
 
+get_directory_property(CMKR_VS_STARTUP_PROJECT DIRECTORY ${PROJECT_SOURCE_DIR} DEFINITION VS_STARTUP_PROJECT)
+if(NOT CMKR_VS_STARTUP_PROJECT)
+	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT cmkr-qt5-msvc-static-template)
+endif()
+
+set(CMKR_TARGET cmkr-qt5-msvc-static-template)
 # Enable Qt moc/rrc/uic support
 target_qt(${CMKR_TARGET})
-
-unset(CMKR_TARGET)
-unset(CMKR_SOURCES)
 
 install(
 	TARGETS
